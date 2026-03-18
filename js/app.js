@@ -211,37 +211,73 @@
     saveAs(blob, `${name}_resume.html`);
   });
 
-  // ===== DOWNLOAD PDF (via print) =====
-  downloadPdf.addEventListener('click', () => {
+  // ===== DOWNLOAD PDF (via html2pdf, always light for readability) =====
+  downloadPdf.addEventListener('click', async () => {
     if (!parsedData) return;
     downloadMenu.hidden = true;
 
-    const updatedData = getUpdatedData();
-    const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
+    // Show loading
+    const origText = downloadPdf.innerHTML;
+    downloadPdf.innerHTML = '<span class="download-icon">⏳</span><span><strong>Generating...</strong><small>Please wait</small></span>';
+    downloadPdf.disabled = true;
 
-    // Open in a new window and trigger print
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(html);
-    printWindow.document.close();
-    
-    // Wait for fonts + rendering, then print
-    const tryPrint = () => {
-      try {
-        printWindow.focus();
-        printWindow.print();
-      } catch (e) {
-        console.error('Print error:', e);
-        alert('PDF export failed. Try downloading as HTML instead.');
+    try {
+      const updatedData = getUpdatedData();
+      const name = filename();
+
+      // Render with light theme for clean PDF
+      const html = ResumeRenderer.render(updatedData, { theme: 'light', sections });
+
+      // Create hidden iframe
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:1100px;';
+      document.body.appendChild(iframe);
+
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
+
+      // Wait for fonts
+      if (iframe.contentDocument.fonts) {
+        await iframe.contentDocument.fonts.ready;
       }
-    };
+      await new Promise(r => setTimeout(r, 500));
 
-    // Wait for fonts to load
-    if (printWindow.document.fonts && printWindow.document.fonts.ready) {
-      printWindow.document.fonts.ready.then(() => {
-        setTimeout(tryPrint, 800);
-      });
-    } else {
-      setTimeout(tryPrint, 1500);
+      const resumeEl = iframe.contentDocument.querySelector('.resume');
+      if (!resumeEl) throw new Error('Could not render resume');
+
+      // PDF options
+      const opt = {
+        margin: [10, 10, 10, 10], // top, right, bottom, left mm
+        filename: `${name}_resume.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          letterRendering: true
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        },
+        pagebreak: {
+          mode: ['avoid-all', 'css', 'legacy'],
+          before: '.page-break-before',
+          after: '.page-break-after',
+          avoid: '.resume-section, .resume-item, .project-card, .skills-grid'
+        }
+      };
+
+      await html2pdf().set(opt).from(resumeEl).save();
+      document.body.removeChild(iframe);
+    } catch (err) {
+      console.error('PDF error:', err);
+      alert('PDF generation failed. Please download as HTML instead.');
+    } finally {
+      downloadPdf.innerHTML = origText;
+      downloadPdf.disabled = false;
     }
   });
 

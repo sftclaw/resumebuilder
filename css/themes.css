@@ -381,3 +381,29 @@
     transform: none !important;
   }
 }
+
+/* ===== PDF PAGE BREAK AVOID ===== */
+.resume-section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.resume-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.project-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.skills-grid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.resume-hero {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
