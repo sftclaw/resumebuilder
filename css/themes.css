@@ -1,7 +1,7 @@
 /* ===== Resume Themes — Warm Claude-inspired palette ===== */
 
 /* ===== THEME: DARK ===== */
-.theme-dark .resume {
+.resume.theme-dark {
   --bg: #1a1614;
   --bg-secondary: #241f1c;
   --text: #f0ebe6;
@@ -14,7 +14,7 @@
 }
 
 /* ===== THEME: LIGHT ===== */
-.theme-light .resume {
+.resume.theme-light {
   --bg: #fefcfa;
   --bg-secondary: #f8f4f0;
   --text: #2c2420;
@@ -26,13 +26,13 @@
   --skill-fill: linear-gradient(135deg, #c45a3c, #d97757);
 }
 
-.theme-light .resume {
+.resume.theme-light {
   background: var(--bg);
   color: var(--text);
 }
 
 /* ===== THEME: MINIMAL ===== */
-.theme-minimal .resume {
+.resume.theme-minimal {
   --bg: #faf8f6;
   --bg-secondary: #ffffff;
   --text: #1a1614;
@@ -45,7 +45,7 @@
 }
 
 /* ===== THEME: BOLD ===== */
-.theme-bold .resume {
+.resume.theme-bold {
   --bg: #0f0c0a;
   --bg-secondary: #1a1614;
   --text: #ffffff;
@@ -285,8 +285,8 @@
   }
 
   /* Force light colors for printing */
-  .theme-dark .resume,
-  .theme-bold .resume {
+  .resume.theme-dark,
+  .resume.theme-bold {
     --bg: #ffffff;
     --bg-secondary: #f8f9fa;
     --text: #1a1a1a;

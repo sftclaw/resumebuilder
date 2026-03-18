@@ -136,10 +136,24 @@
     const html = ResumeRenderer.renderPreview(updatedData, { theme: currentTheme, sections });
     previewFrame.innerHTML = html;
     
-    // Apply theme class
+    // Apply theme class on the resume element
     const resume = previewFrame.querySelector('.resume');
     if (resume) {
       resume.className = `resume theme-${currentTheme}`;
+    }
+
+    // Update preview container background to match theme
+    const container = document.querySelector('.preview-container');
+    const frame = document.querySelector('.preview-frame');
+    const themeColors = {
+      dark: { container: '#110e0c', frame: '#1a1614' },
+      light: { container: '#e8e2dc', frame: '#fefcfa' },
+      minimal: { container: '#e8e2dc', frame: '#faf8f6' },
+      bold: { container: '#080604', frame: '#0f0c0a' }
+    };
+    if (container && frame && themeColors[currentTheme]) {
+      container.style.background = themeColors[currentTheme].container;
+      frame.style.background = themeColors[currentTheme].frame;
     }
   }
 
@@ -210,12 +224,25 @@
     printWindow.document.write(html);
     printWindow.document.close();
     
-    // Wait for fonts to load, then print
-    printWindow.addEventListener('load', () => {
-      setTimeout(() => {
+    // Wait for fonts + rendering, then print
+    const tryPrint = () => {
+      try {
+        printWindow.focus();
         printWindow.print();
-      }, 500);
-    });
+      } catch (e) {
+        console.error('Print error:', e);
+        alert('PDF export failed. Try downloading as HTML instead.');
+      }
+    };
+
+    // Wait for fonts to load
+    if (printWindow.document.fonts && printWindow.document.fonts.ready) {
+      printWindow.document.fonts.ready.then(() => {
+        setTimeout(tryPrint, 800);
+      });
+    } else {
+      setTimeout(tryPrint, 1500);
+    }
   });
 
   // ===== DOWNLOAD MARKDOWN =====
