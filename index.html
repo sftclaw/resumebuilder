@@ -148,7 +148,25 @@
         </div>
       </div>
       <div class="toolbar-right">
-        <button id="downloadBtn" class="btn btn-primary">⬇️ Download HTML</button>
+        <div class="download-dropdown">
+          <button id="downloadBtn" class="btn btn-primary">⬇️ Download</button>
+          <div class="download-menu" id="downloadMenu" hidden>
+            <button id="downloadHtml" class="download-option">
+              <span class="download-icon">📄</span>
+              <span>
+                <strong>HTML</strong>
+                <small>Single file, works anywhere</small>
+              </span>
+            </button>
+            <button id="downloadPdf" class="download-option">
+              <span class="download-icon">📕</span>
+              <span>
+                <strong>PDF</strong>
+                <small>Print-ready document</small>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -210,6 +228,7 @@
   <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/renderer.js"></script>
   <script src="js/demo.js"></script>

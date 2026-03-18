@@ -25,6 +25,9 @@
   const previewFrame = document.getElementById('previewFrame');
   const backBtn = document.getElementById('backBtn');
   const downloadBtn = document.getElementById('downloadBtn');
+  const downloadMenu = document.getElementById('downloadMenu');
+  const downloadHtml = document.getElementById('downloadHtml');
+  const downloadPdf = document.getElementById('downloadPdf');
   const fileInput = document.getElementById('fileInput');
   const uploadWidget = document.getElementById('uploadWidget');
 
@@ -164,9 +167,25 @@
     });
   });
 
-  // ===== DOWNLOAD =====
-  downloadBtn.addEventListener('click', () => {
+  // ===== DOWNLOAD DROPDOWN =====
+  downloadBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    downloadMenu.hidden = !downloadMenu.hidden;
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    downloadMenu.hidden = true;
+  });
+
+  downloadMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // ===== DOWNLOAD HTML =====
+  downloadHtml.addEventListener('click', () => {
     if (!parsedData) return;
+    downloadMenu.hidden = true;
 
     const updatedData = getUpdatedData();
     const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
@@ -174,6 +193,64 @@
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const name = (updatedData.profile.name || 'resume').replace(/[^a-z0-9]/gi, '_');
     saveAs(blob, `${name}_resume.html`);
+  });
+
+  // ===== DOWNLOAD PDF =====
+  downloadPdf.addEventListener('click', async () => {
+    if (!parsedData) return;
+    downloadMenu.hidden = true;
+
+    // Show loading state
+    const originalText = downloadPdf.innerHTML;
+    downloadPdf.innerHTML = '<span class="download-icon">⏳</span><span><strong>Generating PDF...</strong><small>Please wait</small></span>';
+    downloadPdf.disabled = true;
+
+    try {
+      const updatedData = getUpdatedData();
+      const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
+
+      // Create a hidden iframe to render the resume
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:1200px;opacity:0;pointer-events:none;';
+      document.body.appendChild(iframe);
+
+      // Write HTML to iframe
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(html);
+      iframe.contentDocument.close();
+
+      // Wait for fonts and rendering
+      await new Promise(resolve => {
+        iframe.onload = resolve;
+        setTimeout(resolve, 2000); // Fallback timeout
+      });
+
+      // Wait a bit more for fonts
+      await new Promise(r => setTimeout(r, 500));
+
+      const resumeEl = iframe.contentDocument.querySelector('.resume');
+      const name = (updatedData.profile.name || 'resume').replace(/[^a-z0-9]/gi, '_');
+
+      // Use html2pdf
+      const opt = {
+        margin: 0,
+        filename: `${name}_resume.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().set(opt).from(resumeEl).save();
+
+      // Cleanup
+      document.body.removeChild(iframe);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('Failed to generate PDF. Please try downloading as HTML instead.');
+    } finally {
+      downloadPdf.innerHTML = originalText;
+      downloadPdf.disabled = false;
+    }
   });
 
   // ===== HELPERS =====
