@@ -140,7 +140,7 @@
         <span class="toolbar-title">ResumeBuilder</span>
       </div>
       <div class="toolbar-center">
-        <div class="theme-switcher">
+        <div class="theme-switcher" title="Preview & export theme">
           <button class="theme-btn active" data-theme="dark">🌙 Dark</button>
           <button class="theme-btn" data-theme="light">☀️ Light</button>
           <button class="theme-btn" data-theme="minimal">◻️ Minimal</button>
@@ -163,6 +163,20 @@
               <span>
                 <strong>PDF</strong>
                 <small>Print-ready document</small>
+              </span>
+            </button>
+            <button id="downloadMd" class="download-option">
+              <span class="download-icon">📝</span>
+              <span>
+                <strong>Markdown</strong>
+                <small>Plain text format</small>
+              </span>
+            </button>
+            <button id="downloadJson" class="download-option">
+              <span class="download-icon">📋</span>
+              <span>
+                <strong>JSON</strong>
+                <small>Raw data backup</small>
               </span>
             </button>
           </div>
@@ -228,7 +242,6 @@
   <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
-  <script src="https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/renderer.js"></script>
   <script src="js/demo.js"></script>

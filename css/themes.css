@@ -269,3 +269,115 @@
   color: var(--accent);
   text-decoration: none;
 }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .resume {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Force light colors for printing */
+  .theme-dark .resume,
+  .theme-bold .resume {
+    --bg: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text: #1a1a1a;
+    --text-muted: #555555;
+    --accent: #c45a3c;
+    --accent-light: #d97757;
+    --border: #e0e0e0;
+    --skill-bg: rgba(196, 90, 60, 0.1);
+    --skill-fill: linear-gradient(135deg, #c45a3c, #d97757);
+  }
+  
+  .resume {
+    background: #ffffff !important;
+    color: #1a1a1a !important;
+  }
+  
+  .resume-hero h1 {
+    color: #c45a3c !important;
+    -webkit-text-fill-color: #c45a3c !important;
+    background: none !important;
+  }
+  
+  .resume-hero .headline {
+    color: #d97757 !important;
+  }
+  
+  .resume-hero .about,
+  .resume-item-description,
+  .resume-item-date {
+    color: #555 !important;
+  }
+  
+  .resume-item-company {
+    color: #c45a3c !important;
+  }
+  
+  .resume-section h2 {
+    color: #c45a3c !important;
+  }
+  
+  .resume-section h2::before {
+    background: #c45a3c !important;
+  }
+  
+  .resume-hero::before {
+    background: #c45a3c !important;
+  }
+  
+  .resume-item::before {
+    background: #c45a3c !important;
+  }
+  
+  .skill-tag {
+    background: rgba(196, 90, 60, 0.1) !important;
+    color: #c45a3c !important;
+    border: 1px solid #e0d8d0 !important;
+  }
+  
+  .resume-contact a {
+    color: #c45a3c !important;
+  }
+  
+  .project-card {
+    background: #f8f9fa !important;
+    border: 1px solid #e0e0e0 !important;
+  }
+  
+  .project-links a {
+    color: #c45a3c !important;
+  }
+  
+  /* Page breaks */
+  .resume-section {
+    page-break-inside: avoid;
+  }
+  
+  .resume-item {
+    page-break-inside: avoid;
+  }
+  
+  .project-card {
+    page-break-inside: avoid;
+  }
+  
+  .skills-grid {
+    page-break-inside: avoid;
+  }
+  
+  /* No animations in print */
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

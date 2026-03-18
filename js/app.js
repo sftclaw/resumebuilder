@@ -28,6 +28,8 @@
   const downloadMenu = document.getElementById('downloadMenu');
   const downloadHtml = document.getElementById('downloadHtml');
   const downloadPdf = document.getElementById('downloadPdf');
+  const downloadMd = document.getElementById('downloadMd');
+  const downloadJson = document.getElementById('downloadJson');
   const fileInput = document.getElementById('fileInput');
   const uploadWidget = document.getElementById('uploadWidget');
 
@@ -59,7 +61,6 @@
     if (data) {
       populateEditor(data);
     } else {
-      // Fresh start — empty editor
       parsedData = {
         profile: { name: '', headline: '', location: '', summary: '', email: '', website: '' },
         experience: [],
@@ -108,13 +109,11 @@
     document.getElementById('field-email').value = data.profile.email || '';
     document.getElementById('field-website').value = data.profile.website || '';
 
-    // Reset section toggles
     document.querySelectorAll('.section-toggles input').forEach(el => {
       el.checked = true;
     });
     sections = { experience: true, education: true, skills: true, projects: true, certifications: true };
 
-    // Reset theme
     document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('[data-theme="dark"]').classList.add('active');
     currentTheme = 'dark';
@@ -136,8 +135,12 @@
 
     const html = ResumeRenderer.renderPreview(updatedData, { theme: currentTheme, sections });
     previewFrame.innerHTML = html;
-    previewFrame.querySelector('.resume').classList.add(`theme-${currentTheme}`);
-    AOS.refresh();
+    
+    // Apply theme class
+    const resume = previewFrame.querySelector('.resume');
+    if (resume) {
+      resume.className = `resume theme-${currentTheme}`;
+    }
   }
 
   // Debounced update
@@ -173,7 +176,6 @@
     downloadMenu.hidden = !downloadMenu.hidden;
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener('click', () => {
     downloadMenu.hidden = true;
   });
@@ -191,66 +193,111 @@
     const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
 
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const name = (updatedData.profile.name || 'resume').replace(/[^a-z0-9]/gi, '_');
+    const name = filename();
     saveAs(blob, `${name}_resume.html`);
   });
 
-  // ===== DOWNLOAD PDF =====
-  downloadPdf.addEventListener('click', async () => {
+  // ===== DOWNLOAD PDF (via print) =====
+  downloadPdf.addEventListener('click', () => {
     if (!parsedData) return;
     downloadMenu.hidden = true;
 
-    // Show loading state
-    const originalText = downloadPdf.innerHTML;
-    downloadPdf.innerHTML = '<span class="download-icon">⏳</span><span><strong>Generating PDF...</strong><small>Please wait</small></span>';
-    downloadPdf.disabled = true;
+    const updatedData = getUpdatedData();
+    const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
 
-    try {
-      const updatedData = getUpdatedData();
-      const html = ResumeRenderer.render(updatedData, { theme: currentTheme, sections });
+    // Open in a new window and trigger print
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    
+    // Wait for fonts to load, then print
+    printWindow.addEventListener('load', () => {
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    });
+  });
 
-      // Create a hidden iframe to render the resume
-      const iframe = document.createElement('iframe');
-      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:1200px;opacity:0;pointer-events:none;';
-      document.body.appendChild(iframe);
+  // ===== DOWNLOAD MARKDOWN =====
+  downloadMd.addEventListener('click', () => {
+    if (!parsedData) return;
+    downloadMenu.hidden = true;
 
-      // Write HTML to iframe
-      iframe.contentDocument.open();
-      iframe.contentDocument.write(html);
-      iframe.contentDocument.close();
+    const data = getUpdatedData();
+    let md = '';
 
-      // Wait for fonts and rendering
-      await new Promise(resolve => {
-        iframe.onload = resolve;
-        setTimeout(resolve, 2000); // Fallback timeout
-      });
+    // Name & headline
+    md += `# ${data.profile.name || 'Resume'}\n\n`;
+    if (data.profile.headline) md += `> ${data.profile.headline}\n\n`;
+    if (data.profile.location) md += `📍 ${data.profile.location}\n`;
+    if (data.profile.email) md += `📧 ${data.profile.email}\n`;
+    if (data.profile.website) md += `🌐 [Portfolio](${data.profile.website})\n`;
+    md += '\n';
 
-      // Wait a bit more for fonts
-      await new Promise(r => setTimeout(r, 500));
-
-      const resumeEl = iframe.contentDocument.querySelector('.resume');
-      const name = (updatedData.profile.name || 'resume').replace(/[^a-z0-9]/gi, '_');
-
-      // Use html2pdf
-      const opt = {
-        margin: 0,
-        filename: `${name}_resume.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      await html2pdf().set(opt).from(resumeEl).save();
-
-      // Cleanup
-      document.body.removeChild(iframe);
-    } catch (err) {
-      console.error('PDF generation error:', err);
-      alert('Failed to generate PDF. Please try downloading as HTML instead.');
-    } finally {
-      downloadPdf.innerHTML = originalText;
-      downloadPdf.disabled = false;
+    if (data.profile.summary) {
+      md += `## About\n\n${data.profile.summary}\n\n`;
     }
+
+    // Experience
+    if (sections.experience && data.experience.length) {
+      md += '## Experience\n\n';
+      data.experience.forEach(item => {
+        md += `### ${item.title} at ${item.company}\n`;
+        md += `*${item.startDate} — ${item.endDate}${item.location ? ' · ' + item.location : ''}*\n\n`;
+        if (item.description) {
+          md += item.description.replace(/<br>/g, '\n') + '\n\n';
+        }
+      });
+    }
+
+    // Education
+    if (sections.education && data.education.length) {
+      md += '## Education\n\n';
+      data.education.forEach(item => {
+        md += `### ${item.school}\n`;
+        md += `*${item.degree || ''}${item.field ? ' in ' + item.field : ''} — ${item.startDate} — ${item.endDate}*\n\n`;
+      });
+    }
+
+    // Skills
+    if (sections.skills && data.skills.length) {
+      md += '## Skills\n\n';
+      md += data.skills.map(s => `\`${s}\``).join(' ') + '\n\n';
+    }
+
+    // Projects
+    if (sections.projects && data.projects.length) {
+      md += '## Projects\n\n';
+      data.projects.forEach(item => {
+        md += `### ${item.title}\n`;
+        if (item.description) md += item.description.replace(/<br>/g, '\n') + '\n';
+        if (item.url) md += `[View Project](${item.url})\n`;
+        md += '\n';
+      });
+    }
+
+    // Certifications
+    if (sections.certifications && data.certifications.length) {
+      md += '## Certifications\n\n';
+      data.certifications.forEach(item => {
+        md += `- **${item.name}**${item.authority ? ' — ' + item.authority : ''}${item.date ? ' (' + item.date + ')' : ''}\n`;
+      });
+      md += '\n';
+    }
+
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    saveAs(blob, `${filename()}_resume.md`);
+  });
+
+  // ===== DOWNLOAD JSON =====
+  downloadJson.addEventListener('click', () => {
+    if (!parsedData) return;
+    downloadMenu.hidden = true;
+
+    const data = getUpdatedData();
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+    saveAs(blob, `${filename()}_resume.json`);
   });
 
   // ===== HELPERS =====
@@ -263,6 +310,11 @@
     data.profile.email = document.getElementById('field-email').value;
     data.profile.website = document.getElementById('field-website').value;
     return data;
+  }
+
+  function filename() {
+    const name = (document.getElementById('field-name').value || 'resume');
+    return name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
   }
 
 })();
