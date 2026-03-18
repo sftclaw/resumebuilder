@@ -11,38 +11,125 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- LANDING / UPLOAD SCREEN -->
+  <!-- LANDING SCREEN -->
   <div id="landing" class="screen active">
-    <div class="landing-content">
-      <div class="logo" data-aos="fade-down">📄✨</div>
-      <h1 data-aos="fade-up" data-aos-delay="100">ResumeBuilder</h1>
-      <p class="tagline" data-aos="fade-up" data-aos-delay="200">Turn your LinkedIn data export into a beautiful animated resume.<br><strong>100% client-side. Your data never leaves your browser.</strong></p>
-      
-      <div class="upload-area" id="uploadArea" data-aos="fade-up" data-aos-delay="300">
-        <div class="upload-icon">📁</div>
-        <p class="upload-text">Drag & drop your LinkedIn ZIP file here</p>
-        <p class="upload-subtext">or click to browse</p>
-        <input type="file" id="fileInput" accept=".zip" hidden>
+    <nav class="landing-nav">
+      <span class="nav-logo">📄✨ ResumeBuilder</span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How It Works</a>
+        <button id="demoBtn" class="btn btn-secondary">👀 See Demo</button>
+        <button id="startBtn" class="btn btn-primary">Get Started</button>
       </div>
+    </nav>
 
-      <div class="how-it-works" data-aos="fade-up" data-aos-delay="400">
-        <h3>How it works</h3>
-        <div class="steps">
-          <div class="step">
-            <span class="step-num">1</span>
-            <p>Go to LinkedIn → Settings → Data Privacy → Get a copy of your data</p>
-          </div>
-          <div class="step">
-            <span class="step-num">2</span>
-            <p>Download the ZIP file (select all or just profile info)</p>
-          </div>
-          <div class="step">
-            <span class="step-num">3</span>
-            <p>Drop it here and watch the magic happen ✨</p>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge" data-aos="fade-down">🔒 100% Client-Side • Your Data Never Leaves Your Browser</div>
+        <h1 data-aos="fade-up" data-aos-delay="100">Turn your LinkedIn profile<br>into a <span class="gradient-text">stunning resume</span></h1>
+        <p class="hero-sub" data-aos="fade-up" data-aos-delay="200">Export your LinkedIn data, drop the ZIP file, and watch your career story come alive with smooth scroll animations and beautiful themes.</p>
+        <div class="hero-actions" data-aos="fade-up" data-aos-delay="300">
+          <button id="startBtn2" class="btn btn-primary btn-lg">🚀 Build My Resume</button>
+          <button id="demoBtn2" class="btn btn-secondary btn-lg">👀 View Demo</button>
+        </div>
+      </div>
+      <div class="hero-visual" data-aos="fade-left" data-aos-delay="400">
+        <div class="phone-mockup">
+          <div class="phone-screen">
+            <div class="mock-hero">
+              <div class="mock-name"></div>
+              <div class="mock-line short"></div>
+              <div class="mock-line"></div>
+            </div>
+            <div class="mock-section">
+              <div class="mock-section-title"></div>
+              <div class="mock-item"><div class="mock-dot"></div><div class="mock-item-lines"><div class="mock-line"></div><div class="mock-line short"></div></div></div>
+              <div class="mock-item"><div class="mock-dot"></div><div class="mock-item-lines"><div class="mock-line"></div><div class="mock-line short"></div></div></div>
+            </div>
+            <div class="mock-section">
+              <div class="mock-section-title"></div>
+              <div class="mock-tags">
+                <span class="mock-tag"></span>
+                <span class="mock-tag"></span>
+                <span class="mock-tag"></span>
+                <span class="mock-tag"></span>
+                <span class="mock-tag"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <section id="features" class="features-section">
+      <h2 data-aos="fade-up">Why ResumeBuilder?</h2>
+      <div class="features-grid">
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon">🔒</div>
+          <h3>Privacy First</h3>
+          <p>Everything runs in your browser. Your LinkedIn data never touches any server.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon">✨</div>
+          <h3>Scroll Animations</h3>
+          <p>Smooth, professional animations that make your resume pop when scrolling.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-icon">🎨</div>
+          <h3>4 Themes</h3>
+          <p>Dark, Light, Minimal, or Bold — pick the vibe that matches your style.</p>
+        </div>
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-icon">⬇️</div>
+          <h3>Download & Share</h3>
+          <p>Download a single HTML file. Host it anywhere — GitHub Pages, Netlify, or your own domain.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="how-section">
+      <h2 data-aos="fade-up">How It Works</h2>
+      <div class="how-steps">
+        <div class="how-step" data-aos="fade-up" data-aos-delay="100">
+          <div class="how-num">1</div>
+          <div class="how-content">
+            <h3>Export from LinkedIn</h3>
+            <p>Go to <strong>Settings → Data Privacy → Get a copy of your data</strong>. Select all data and download the ZIP file.</p>
+          </div>
+        </div>
+        <div class="how-step" data-aos="fade-up" data-aos-delay="200">
+          <div class="how-num">2</div>
+          <div class="how-content">
+            <h3>Drop & Parse</h3>
+            <p>Drag the ZIP file onto our builder. We'll instantly parse your profile, experience, education, skills, and more.</p>
+          </div>
+        </div>
+        <div class="how-step" data-aos="fade-up" data-aos-delay="300">
+          <div class="how-num">3</div>
+          <div class="how-content">
+            <h3>Customize</h3>
+            <p>Edit your info, pick a theme, toggle sections on/off. See changes live in the preview.</p>
+          </div>
+        </div>
+        <div class="how-step" data-aos="fade-up" data-aos-delay="400">
+          <div class="how-num">4</div>
+          <div class="how-content">
+            <h3>Download & Deploy</h3>
+            <p>Download a single HTML file with everything baked in. Upload to GitHub Pages, Netlify, or host it wherever you want.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" data-aos="fade-up">
+      <h2>Ready to build your resume?</h2>
+      <p>No sign-up. No server. No tracking. Just your browser and a beautiful resume.</p>
+      <button id="startBtn3" class="btn btn-primary btn-lg">🚀 Get Started</button>
+    </section>
+
+    <footer>
+      <p>Built with ☕ by <a href="https://github.com/sftclaw" target="_blank">sftclaw</a> · Open source on <a href="https://github.com/sftclaw/resumebuilder" target="_blank">GitHub</a></p>
+    </footer>
   </div>
 
   <!-- EDITOR SCREEN -->
@@ -61,14 +148,18 @@
         </div>
       </div>
       <div class="toolbar-right">
-        <button id="downloadBtn" class="btn btn-secondary">⬇️ Download HTML</button>
-        <button id="deployBtn" class="btn btn-primary">🚀 Deploy to GitHub</button>
+        <button id="downloadBtn" class="btn btn-primary">⬇️ Download HTML</button>
       </div>
     </div>
 
     <div class="editor-layout">
       <div class="sidebar">
-        <h3>Customize</h3>
+        <div class="upload-widget" id="uploadWidget">
+          <p>📎 Upload LinkedIn ZIP</p>
+          <input type="file" id="fileInput" accept=".zip">
+        </div>
+
+        <h3>Profile</h3>
         
         <div class="field">
           <label>Full Name</label>
@@ -116,33 +207,12 @@
     </div>
   </div>
 
-  <!-- DEPLOY MODAL -->
-  <div id="deployModal" class="modal" hidden>
-    <div class="modal-content">
-      <h2>🚀 Deploy to GitHub Pages</h2>
-      <p>Enter your GitHub Personal Access Token (with <code>repo</code> scope) to deploy.</p>
-      <div class="field">
-        <label>GitHub Token</label>
-        <input type="password" id="deployToken" placeholder="ghp_...">
-      </div>
-      <div class="field">
-        <label>Repository Name</label>
-        <input type="text" id="deployRepo" placeholder="my-resume" value="my-resume">
-      </div>
-      <div class="deploy-status" id="deployStatus"></div>
-      <div class="modal-actions">
-        <button id="cancelDeploy" class="btn btn-ghost">Cancel</button>
-        <button id="confirmDeploy" class="btn btn-primary">Deploy</button>
-      </div>
-    </div>
-  </div>
-
   <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/renderer.js"></script>
-  <script src="js/deploy.js"></script>
+  <script src="js/demo.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
