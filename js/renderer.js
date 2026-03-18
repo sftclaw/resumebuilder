@@ -8,7 +8,7 @@ const ResumeRenderer = {
   currentTheme: 'dark',
 
   /**
-   * Render the full resume HTML
+   * Render the full resume HTML (standalone, with animations)
    */
   render(data, options = {}) {
     const theme = options.theme || this.currentTheme;
@@ -27,22 +27,17 @@ const ResumeRenderer = {
 </head>
 <body class="theme-${theme}">
   <div class="resume">
-    ${this.renderHero(data.profile)}
-    ${sections.experience !== false && data.experience.length ? this.renderExperience(data.experience) : ''}
-    ${sections.education !== false && data.education.length ? this.renderEducation(data.education) : ''}
-    ${sections.skills !== false && data.skills.length ? this.renderSkills(data.skills) : ''}
-    ${sections.projects !== false && data.projects.length ? this.renderProjects(data.projects) : ''}
-    ${sections.certifications !== false && data.certifications.length ? this.renderCertifications(data.certifications) : ''}
+    ${this.renderHero(data.profile, true)}
+    ${sections.experience !== false && data.experience.length ? this.renderExperience(data.experience, true) : ''}
+    ${sections.education !== false && data.education.length ? this.renderEducation(data.education, true) : ''}
+    ${sections.skills !== false && data.skills.length ? this.renderSkills(data.skills, true) : ''}
+    ${sections.projects !== false && data.projects.length ? this.renderProjects(data.projects, true) : ''}
+    ${sections.certifications !== false && data.certifications.length ? this.renderCertifications(data.certifications, true) : ''}
   </div>
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"><\/script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      AOS.init({
-        duration: 600,
-        easing: 'ease-out-cubic',
-        once: true,
-        offset: 50
-      });
+      AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 50 });
     });
   <\/script>
 </body>
@@ -52,7 +47,7 @@ const ResumeRenderer = {
   },
 
   /**
-   * Render preview (for the editor)
+   * Render preview (for the editor — no animations, just show everything)
    */
   renderPreview(data, options = {}) {
     const theme = options.theme || this.currentTheme;
@@ -60,12 +55,12 @@ const ResumeRenderer = {
     
     return `
       <div class="resume">
-        ${this.renderHero(data.profile)}
-        ${sections.experience !== false && data.experience.length ? this.renderExperience(data.experience) : ''}
-        ${sections.education !== false && data.education.length ? this.renderEducation(data.education) : ''}
-        ${sections.skills !== false && data.skills.length ? this.renderSkills(data.skills) : ''}
-        ${sections.projects !== false && data.projects.length ? this.renderProjects(data.projects) : ''}
-        ${sections.certifications !== false && data.certifications.length ? this.renderCertifications(data.certifications) : ''}
+        ${this.renderHero(data.profile, false)}
+        ${sections.experience !== false && data.experience.length ? this.renderExperience(data.experience, false) : ''}
+        ${sections.education !== false && data.education.length ? this.renderEducation(data.education, false) : ''}
+        ${sections.skills !== false && data.skills.length ? this.renderSkills(data.skills, false) : ''}
+        ${sections.projects !== false && data.projects.length ? this.renderProjects(data.projects, false) : ''}
+        ${sections.certifications !== false && data.certifications.length ? this.renderCertifications(data.certifications, false) : ''}
       </div>
     `;
   },
@@ -73,14 +68,17 @@ const ResumeRenderer = {
   /**
    * Render Hero section
    */
-  renderHero(profile) {
+  renderHero(profile, animated) {
+    const a = animated ? 'data-aos="fade-up"' : '';
+    const d = (delay) => animated ? `data-aos="fade-up" data-aos-delay="${delay}"` : '';
+    
     return `
-      <div class="resume-hero" data-aos="fade-up">
-        <h1 data-aos="fade-up" data-aos-delay="100">${this.esc(profile.name || 'Your Name')}</h1>
-        ${profile.headline ? `<div class="headline" data-aos="fade-up" data-aos-delay="200">${this.esc(profile.headline)}</div>` : ''}
-        ${profile.location ? `<div class="location" data-aos="fade-up" data-aos-delay="300">📍 ${this.esc(profile.location)}</div>` : ''}
-        ${profile.summary ? `<div class="about" data-aos="fade-up" data-aos-delay="400">${this.esc(profile.summary)}</div>` : ''}
-        <div class="resume-contact" data-aos="fade-up" data-aos-delay="500">
+      <div class="resume-hero" ${a}>
+        <h1 ${d(100)}>${this.esc(profile.name || 'Your Name')}</h1>
+        ${profile.headline ? `<div class="headline" ${d(200)}>${this.esc(profile.headline)}</div>` : ''}
+        ${profile.location ? `<div class="location" ${d(300)}>📍 ${this.esc(profile.location)}</div>` : ''}
+        ${profile.summary ? `<div class="about" ${d(400)}>${this.esc(profile.summary)}</div>` : ''}
+        <div class="resume-contact" ${d(500)}>
           ${profile.email ? `<a href="mailto:${this.esc(profile.email)}">📧 ${this.esc(profile.email)}</a>` : ''}
           ${profile.website ? `<a href="${this.esc(profile.website)}" target="_blank">🌐 Portfolio</a>` : ''}
         </div>
@@ -91,12 +89,12 @@ const ResumeRenderer = {
   /**
    * Render Experience section
    */
-  renderExperience(items) {
+  renderExperience(items, animated) {
     return `
-      <div class="resume-section" data-aos="fade-up">
+      <div class="resume-section" ${animated ? 'data-aos="fade-up"' : ''}>
         <h2>Experience</h2>
         ${items.map((item, i) => `
-          <div class="resume-item" data-aos="fade-up" data-aos-delay="${i * 100}">
+          <div class="resume-item" ${animated ? `data-aos="fade-up" data-aos-delay="${i * 100}"` : ''}>
             <div class="resume-item-header">
               <span class="resume-item-title">${this.esc(item.title)}</span>
               <span class="resume-item-date">${this.esc(item.startDate)} — ${this.esc(item.endDate)}</span>
@@ -112,12 +110,12 @@ const ResumeRenderer = {
   /**
    * Render Education section
    */
-  renderEducation(items) {
+  renderEducation(items, animated) {
     return `
-      <div class="resume-section" data-aos="fade-up">
+      <div class="resume-section" ${animated ? 'data-aos="fade-up"' : ''}>
         <h2>Education</h2>
         ${items.map((item, i) => `
-          <div class="resume-item" data-aos="fade-up" data-aos-delay="${i * 100}">
+          <div class="resume-item" ${animated ? `data-aos="fade-up" data-aos-delay="${i * 100}"` : ''}>
             <div class="resume-item-header">
               <span class="resume-item-title">${this.esc(item.school)}</span>
               <span class="resume-item-date">${this.esc(item.startDate)} — ${this.esc(item.endDate)}</span>
@@ -132,13 +130,13 @@ const ResumeRenderer = {
   /**
    * Render Skills section
    */
-  renderSkills(skills) {
+  renderSkills(skills, animated) {
     return `
-      <div class="resume-section" data-aos="fade-up">
+      <div class="resume-section" ${animated ? 'data-aos="fade-up"' : ''}>
         <h2>Skills</h2>
         <div class="skills-grid">
           ${skills.map((skill, i) => `
-            <span class="skill-tag" data-aos="zoom-in" data-aos-delay="${i * 30}">${this.esc(skill)}</span>
+            <span class="skill-tag" ${animated ? `data-aos="zoom-in" data-aos-delay="${i * 30}"` : ''}>${this.esc(skill)}</span>
           `).join('')}
         </div>
       </div>
@@ -148,13 +146,13 @@ const ResumeRenderer = {
   /**
    * Render Projects section
    */
-  renderProjects(items) {
+  renderProjects(items, animated) {
     return `
-      <div class="resume-section" data-aos="fade-up">
+      <div class="resume-section" ${animated ? 'data-aos="fade-up"' : ''}>
         <h2>Projects</h2>
         <div class="projects-grid">
           ${items.map((item, i) => `
-            <div class="project-card" data-aos="fade-up" data-aos-delay="${i * 100}">
+            <div class="project-card" ${animated ? `data-aos="fade-up" data-aos-delay="${i * 100}"` : ''}>
               <h3>${this.esc(item.title)}</h3>
               ${item.description ? `<p>${this.esc(item.description)}</p>` : ''}
               ${item.url ? `<div class="project-links"><a href="${this.esc(item.url)}" target="_blank">View Project →</a></div>` : ''}
@@ -168,12 +166,12 @@ const ResumeRenderer = {
   /**
    * Render Certifications section
    */
-  renderCertifications(items) {
+  renderCertifications(items, animated) {
     return `
-      <div class="resume-section" data-aos="fade-up">
+      <div class="resume-section" ${animated ? 'data-aos="fade-up"' : ''}>
         <h2>Certifications</h2>
         ${items.map((item, i) => `
-          <div class="resume-item" data-aos="fade-up" data-aos-delay="${i * 100}">
+          <div class="resume-item" ${animated ? `data-aos="fade-up" data-aos-delay="${i * 100}"` : ''}>
             <div class="resume-item-header">
               <span class="resume-item-title">${this.esc(item.name)}</span>
               <span class="resume-item-date">${this.esc(item.date)}</span>
@@ -213,26 +211,26 @@ body {
   margin: 0;
 }
 
-/* Theme Variables */
+/* Theme Variables — Warm Claude-inspired palette */
 .theme-dark .resume {
-  --bg: #1a1a24; --bg-secondary: #22222e; --text: #e8e8f0; --text-muted: #8888a0;
-  --accent: #6366f1; --accent-light: #818cf8; --border: rgba(255,255,255,0.08);
-  --skill-bg: rgba(99, 102, 241, 0.15); --skill-fill: linear-gradient(135deg, #6366f1, #a855f7);
+  --bg: #1a1614; --bg-secondary: #241f1c; --text: #f0ebe6; --text-muted: #a09890;
+  --accent: #d97757; --accent-light: #e8956e; --border: rgba(255,255,255,0.08);
+  --skill-bg: rgba(217, 119, 87, 0.15); --skill-fill: linear-gradient(135deg, #d97757, #c45a3c);
 }
 .theme-light .resume {
-  --bg: #ffffff; --bg-secondary: #f8f9fc; --text: #1a1a2e; --text-muted: #6b7280;
-  --accent: #4f46e5; --accent-light: #6366f1; --border: rgba(0,0,0,0.1);
-  --skill-bg: rgba(79, 70, 229, 0.1); --skill-fill: linear-gradient(135deg, #4f46e5, #7c3aed);
+  --bg: #fefcfa; --bg-secondary: #f8f4f0; --text: #2c2420; --text-muted: #8a7e76;
+  --accent: #c45a3c; --accent-light: #d97757; --border: rgba(0,0,0,0.1);
+  --skill-bg: rgba(196, 90, 60, 0.1); --skill-fill: linear-gradient(135deg, #c45a3c, #d97757);
 }
 .theme-minimal .resume {
-  --bg: #fafafa; --bg-secondary: #ffffff; --text: #111111; --text-muted: #666666;
-  --accent: #111111; --accent-light: #333333; --border: #e5e5e5;
-  --skill-bg: #f0f0f0; --skill-fill: linear-gradient(90deg, #111, #333);
+  --bg: #faf8f6; --bg-secondary: #ffffff; --text: #1a1614; --text-muted: #777;
+  --accent: #1a1614; --accent-light: #333; --border: #e5ddd8;
+  --skill-bg: #f0ebe6; --skill-fill: linear-gradient(90deg, #333, #666);
 }
 .theme-bold .resume {
-  --bg: #0f0f0f; --bg-secondary: #1a1a1a; --text: #ffffff; --text-muted: #999;
-  --accent: #ff3366; --accent-light: #ff6699; --border: rgba(255, 51, 102, 0.3);
-  --skill-bg: rgba(255, 51, 102, 0.15); --skill-fill: linear-gradient(135deg, #ff3366, #ff9933);
+  --bg: #0f0c0a; --bg-secondary: #1a1614; --text: #ffffff; --text-muted: #b0a090;
+  --accent: #ff7a5a; --accent-light: #ff9980; --border: rgba(255, 122, 90, 0.3);
+  --skill-bg: rgba(255, 122, 90, 0.15); --skill-fill: linear-gradient(135deg, #ff7a5a, #ffb088);
 }
 
 /* Resume */
@@ -246,8 +244,8 @@ body {
 /* Hero */
 .resume-hero { padding: 4rem 3rem; position: relative; overflow: hidden; }
 .resume-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--skill-fill); }
-.resume-hero h1 { font-family: var(--font-display); font-size: 2.8rem; font-weight: 700; margin-bottom: 0.5rem; background: var(--skill-fill); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.resume-hero .headline { font-size: 1.15rem; color: var(--accent); font-weight: 500; margin-bottom: 0.5rem; }
+.resume-hero h1 { font-family: var(--font-display); font-size: 2.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--accent); }
+.resume-hero .headline { font-size: 1.15rem; color: var(--accent-light); font-weight: 500; margin-bottom: 0.5rem; }
 .resume-hero .location { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
 .resume-hero .about { font-size: 0.95rem; color: var(--text-muted); line-height: 1.7; max-width: 600px; }
 .resume-contact { display: flex; gap: 1.5rem; margin-top: 1.5rem; flex-wrap: wrap; }
